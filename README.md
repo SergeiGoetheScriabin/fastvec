@@ -13,9 +13,13 @@ FastVec is a PostgreSQL extension written in modern C++ that provides efficient 
 Features:
 
 -custom vector data type
+
 -close to L2 cache
+
 -SIMD (AVX2) optimizations
+
 -PostgreSQL operators
+
 -going to benchmark performance ofc..
 
 

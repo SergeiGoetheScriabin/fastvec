@@ -8,5 +8,5 @@ struct FastVec
 {
     int32 vl_len_;
     int32 dim;
-    float values[];
+    float values[FLEXIBLE_ARRAY_MEMBER];
 };

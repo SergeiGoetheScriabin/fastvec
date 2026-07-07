@@ -1,5 +1,5 @@
 #include <cstdlib>
-
+#include <cmath>
 extern "C" {
 
 #include "postgres.h"
@@ -72,7 +72,74 @@ Datum fastvec_in(PG_FUNCTION_ARGS)
     PG_RETURN_POINTER(vec);
 }
 
+PG_FUNCTION_INFO_V1(fastvec_l2_distance);
 
+Datum fastvec_l2_distance(PG_FUNCTION_ARGS)
+{
+    FastVec *a = (FastVec*) PG_GETARG_POINTER(0);
+    FastVec *b = (FastVec*) PG_GETARG_POINTER(1);
+
+    if (a->dim != b->dim)
+        ereport(ERROR,
+            (errcode(ERRCODE_DATA_EXCEPTION),
+             errmsg("fastvec dimension mismatch: %d vs %d", a->dim, b->dim)));
+
+    float sum = 0.0f;
+    for (int i = 0; i < a->dim; i++)
+    {
+        float diff = a->values[i] - b->values[i];
+        sum += diff * diff;
+    }
+
+    PG_RETURN_FLOAT8(sqrtf(sum));
+}
+PG_FUNCTION_INFO_V1(fastvec_cosine_distance);
+
+Datum fastvec_cosine_distance(PG_FUNCTION_ARGS)
+{
+    FastVec *a = (FastVec*) PG_GETARG_POINTER(0);
+    FastVec *b = (FastVec*) PG_GETARG_POINTER(1);
+
+    if (a->dim != b->dim)
+        ereport(ERROR,
+            (errcode(ERRCODE_DATA_EXCEPTION),
+             errmsg("fastvec dimension mismatch: %d vs %d", a->dim, b->dim)));
+
+    float dot = 0.0f, norm_a = 0.0f, norm_b = 0.0f;
+    for (int i = 0; i < a->dim; i++)
+    {
+        dot += a->values[i] * b->values[i];
+        norm_a += a->values[i] * a->values[i];
+        norm_b += b->values[i] * b->values[i];
+    }
+
+    if (norm_a == 0.0f || norm_b == 0.0f)
+        ereport(ERROR,
+            (errcode(ERRCODE_DATA_EXCEPTION),
+             errmsg("fastvec cosine distance undefined for zero vector")));
+
+    float similarity = dot / (sqrtf(norm_a) * sqrtf(norm_b));
+    PG_RETURN_FLOAT8(1.0 - similarity);
+}
+
+PG_FUNCTION_INFO_V1(fastvec_inner_product);
+
+Datum fastvec_inner_product(PG_FUNCTION_ARGS)
+{
+    FastVec *a = (FastVec*) PG_GETARG_POINTER(0);
+    FastVec *b = (FastVec*) PG_GETARG_POINTER(1);
+
+    if (a->dim != b->dim)
+        ereport(ERROR,
+            (errcode(ERRCODE_DATA_EXCEPTION),
+             errmsg("fastvec dimension mismatch: %d vs %d", a->dim, b->dim)));
+
+    float sum = 0.0f;
+    for (int i = 0; i < a->dim; i++)
+        sum += a->values[i] * b->values[i];
+
+    PG_RETURN_FLOAT8(sum);
+}
 
 PG_FUNCTION_INFO_V1(fastvec_out);
 

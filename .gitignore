@@ -1,0 +1,60 @@
+# =========================
+# Build files
+# =========================
+*.o
+*.so
+*.a
+*.dylib
+*.dll
+*.exe
+*.out
+
+# PostgreSQL extension artifacts
+*.bc
+*.sql~
+*.control~
+
+# CMake (if you ever use it)
+build/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+compile_commands.json
+
+# Make
+*.d
+*.gcda
+*.gcno
+*.gcov
+
+# Benchmark output
+benchmark/results/*
+!benchmark/results/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# macOS
+.DS_Store
+
+# Linux
+*~
+
+# VS Code
+.vscode/
+
+# CLion
+.idea/
+
+# Visual Studio
+.vs/
+
+# Vim
+*.swp
+*.swo
+
+# Logs
+*.log
